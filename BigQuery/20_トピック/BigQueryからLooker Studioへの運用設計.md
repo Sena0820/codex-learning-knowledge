@@ -142,6 +142,7 @@ Looker Studioでは、この完成テーブルに接続し、期間フィルタ�
 
 ## 関連トピック
 
+- [Looker StudioとBigQueryのクエリ発行と費用最適化](./Looker%20StudioとBigQueryのクエリ発行と費用最適化.md)
 - [GA4のセッション数がBigQuery・探索・Looker Studio・Data APIでズレる理由](../../GA4/20_トピック/GA4のセッション数がBigQuery・探索・Looker%20Studio・Data%20APIでズレる理由.md)
 - [ETLとは何か](../../データマネジメント/20_トピック/ETLとは何か.md)
 
