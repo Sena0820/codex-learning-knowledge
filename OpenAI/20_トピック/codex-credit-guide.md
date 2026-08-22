@@ -61,6 +61,10 @@ ChatGPT Enterpriseの柔軟なクレジット課金で、Codex / ChatGPT Workの
 
 図は、同一トークン構成でのLuna比と、推論・Ultra・画像生成がどこで消費を増やすかを一枚にまとめたものです。
 
+![Lunaの推論レベルと画像生成の専用レート](../40_図解/codex-credit-guide-推論と画像生成.png)
+
+この補足図は、「Lunaの推論レベル」と「画像生成」を別の消費経路として整理したものです。
+
 ## モデルごとの公式レートと使いどころ
 
 ### 現在の主要モデル
@@ -110,6 +114,14 @@ reasoning tokensは画面上では見えない場合がありますが、公式�
 - CodexのUIでいうUltraは、公式説明ではsubagentを使う複数agent実行です。`highの次の固定倍率`とは扱いません。
 - Codexのsubagent設定には、対応モデル向けに`ultra`というeffort指定もあります。UIのUltraオーケストレーションと、個々のsubagentのeffortを混同しないことが重要です。
 - GPT-5.6各モデルは `none / low / medium / high / xhigh / max` をサポートします。モデルごとに対応値を確認します。
+
+### Lunaを選んだ場合の実務的な答え
+
+Lunaのレート（Input 5 / Cached Input 0.5 / Output 30 credits per 1M tokens）は、推論レベルを変えても同じです。ただし、`reasoning effort`を上げると内部のreasoning tokensが増える傾向があり、reasoning tokensはOutput tokensとして課金されます。そのため、同じLunaでも `low → medium → high` と上げるほど、通常はクレジット消費が増えます。
+
+OpenAIはeffortごとの固定倍率を公開していません。したがって「highはmediumの2倍」とは計算できません。実際の消費は、タスク難度、ツール利用、再試行、可視Outputの長さを含む実測値で確認します。
+
+`ultra`は単一agentの固定倍率ではありません。Codex / ChatGPT Workでは、最大級の推論に加えてsubagentへ分割・委譲することがあり、親agentと各subagentのtokensが合算されます。
 
 ## クレジット計算式
 
@@ -189,6 +201,18 @@ Lunaの計算:
 | Text tokens | 125 credits | 31.25 credits | 250 credits |
 
 画像1枚あたりの固定creditではなく、品質・サイズ・text/image token量で変わります。
+
+画像生成を使うときは、選択中のLuna/Terra/Solの通常レートと、GPT-Image-2の専用レートを分けて考えます。
+
+```text
+全体の消費
+= 選択モデル（Lunaなど）のInput / Cached Input / Output / reasoning tokens
++ GPT-Image-2の画像生成用text / image tokens
+```
+
+したがって、画像生成部分はLunaのOutput 30 credits / 1M tokensではなく、GPT-Image-2の専用レートです。一方、画像生成を指示・調整するCodexの通常処理は、選択したLunaのtokensとして計上されます。画像生成を使ったターン全体が「モデルに関係なく同じ固定credit」になるわけではありません。
+
+OpenAI公式では、画像生成は通常のターンよりincluded usageを平均3〜5倍速く消費し、included limit到達後はcreditsを使うと説明しています。Enterpriseの一部ワークスペースは旧レートカードの場合があるため、最終確認はUsage dashboardまたはCodexの`/status`で行います。
 
 ## ChatGPT EnterpriseとCodexの違い
 
