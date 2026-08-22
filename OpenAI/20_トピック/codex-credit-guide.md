@@ -1,7 +1,7 @@
-# Codexクレジット早見表
+# Codexモデル選択とクレジット早見表
 
-確認日: 2026-08-19（JST）
-対象: ChatGPT Enterprise / Edu の新しいトークンベース・クレジットレートカード
+確認日: 2026-08-22（JST）
+対象: ChatGPTサインインのCodexと、トークンベース・クレジットレートカード
 
 > [!IMPORTANT]
 > 一部のEnterprise契約は、移行が完了するまで旧レートカードが適用されます。実際の請求・残高はワークスペースのUsage Dashboardと契約条件を優先してください。
@@ -34,7 +34,7 @@ GPT-5.4 miniのOutput単価だけは公式表で端数が113 creditsに丸めら
 
 ## これは何か
 
-ChatGPT Enterpriseの柔軟なクレジット課金で、Codex / ChatGPT Workのモデル選択が消費量にどう効くかを、公式レートカードから逆算するノートです。
+Codexのモデル選択が、品質・速度・クレジット消費にどう効くかを整理するノートです。ChatGPTサインイン時の推奨モデルと、トークンベースのクレジットレートカードを分けて理解します。
 
 ここでいう「クレジット」はAPIの米ドル料金ではありません。ChatGPT WorkとCodexで共有する、Enterpriseの利用量管理単位です。APIキーでCodexを使う場合は、この表ではなくOpenAI APIの料金が適用されます。
 
@@ -55,11 +55,35 @@ ChatGPT Enterpriseの柔軟なクレジット課金で、Codex / ChatGPT Workの
 4. 画像生成など、別レートが明示された機能
 5. FastやUltra/subagentなどによって増える倍率・実行回数・トークン量
 
+## モデルの性能差と選択フロー
+
+公式の位置づけは、単純な「賢さの順位」ではなく、品質・速度・コストのバランスです。
+
+| 判断 | 選ぶモデル | 理由 |
+|---|---|---|
+| 仕様が明確で、定型的・反復的 | GPT-5.6 Luna | 低コスト・高速。抽出、分類、変換、定型要約向け |
+| 迷ったとき、日常の開発・調査 | GPT-5.6 Terra | 推論・ツール利用・費用のバランスがよい |
+| 曖昧、複雑、失敗コストが高い | GPT-5.6 Sol | 深い分析、設計、難しいコード変更、仕上げ品質向け |
+
+### 実務での基本手順
+
+1. まずTerraで、課題の難しさと必要な品質を見積もる。
+2. 完了条件が明確な反復作業はLunaへ寄せる。
+3. 曖昧さ、複数のトレードオフ、失敗時の影響が大きい場合はSolへ上げる。
+4. モデルを上げる前に、対象範囲・完了条件・検証方法を明確にする。
+5. 実際のUsage表示で、品質向上が消費増に見合ったか確認する。
+
+Reasoning effortを上げると、一般に考える時間とトークン量が増えますが、effortごとの固定クレジット倍率は公開されていません。Ultraは単一モデルの固定倍率ではなく、複数のsubagentへ分割するため、分割効果がある大きな作業に限定します。
+
 ## 理解用イラスト
 
-![Lunaを1としたCodexクレジット比較](../40_図解/codex-credit-guide-全体像.png)
+![Codexモデルの選び方とクレジットの関係](../40_図解/codexモデル選択-使い分け-全体像.png)
 
-図は、同一トークン構成でのLuna比と、推論・Ultra・画像生成がどこで消費を増やすかを一枚にまとめたものです。
+図は、Luna・Terra・Solの使い分けを、作業の明確さ・品質要求・クレジット消費の3軸でまとめたものです。
+
+従来の単価比較を詳しく確認したい場合は、次の補助図を参照します。
+
+![Lunaを1としたCodexクレジット比較](../40_図解/codex-credit-guide-全体像.png)
 
 ![Lunaの推論レベルと画像生成の専用レート](../40_図解/codex-credit-guide-推論と画像生成.png)
 
@@ -270,6 +294,18 @@ OpenAI公式では、画像生成は通常のターンよりincluded usageを平
 
 ## よくある疑問
 
+### Q. どのモデルを標準にすればよい？
+
+迷ったらTerraです。Lunaは明確な定型作業、Solは難しく重要な作業に使い分けます。
+
+### Q. SolはTerraより常に良い？
+
+複雑な課題では有利ですが、明確な変換や抽出ではSolの能力が余り、コストと待ち時間が増える場合があります。必要な品質を満たす最も低いモデルを選びます。
+
+### Q. Lunaで失敗したら、すぐSolに変えるべき？
+
+まず、対象範囲、入力資料、完了条件、検証方法を明確にします。それでも判断や設計が難しい場合にTerra、Solへ上げるのが効率的です。
+
 ### Q. highはmediumの2倍？
 
 いいえ。OpenAIはeffortごとの固定倍率を公開していません。タスク難度に応じてreasoning tokensが適応的に変わります。
@@ -292,10 +328,12 @@ EnterpriseのCodex向け公開レートカードには、独立したcredit/call
 
 ## 参考リンク
 
-すべて2026-08-19に確認。
+2026-08-22に確認。OpenAIの仕様は更新されるため、利用時はUsage画面と公式ページを優先します。
 
-- [ChatGPT Work / Codex Pricing](https://learn.chatgpt.com/docs/pricing) — Enterprise creditsの公式レートカード、画像生成、usage共有、モデル別用途を確認。
-- [Codex Models](https://learn.chatgpt.com/docs/models) — 現在の主要モデル、推奨用途、Ultra、GPT-5.4系の退役予定を確認。
+- [Codex rate card](https://help.openai.com/en/articles/20001106-codex-rate-card) — モデル別のInput、Cached Input、Outputクレジットを確認。
+- [Codex Models](https://developers.openai.com/codex/models) — Sol、Terra、Lunaの推奨用途、Reasoning effort、Ultraを確認。
+- [Using Codex with your ChatGPT plan](https://help.openai.com/en/articles/11369540) — プラン、Usage Dashboard、共有クレジットの考え方を確認。
+- [GPT-5.3-Codex Model](https://developers.openai.com/api/docs/models/gpt-5.3-codex) — APIでの旧Codexモデルの仕様を確認。
 - [Reasoning models](https://developers.openai.com/api/docs/guides/reasoning) — effortの意味、対応レベル、reasoning tokensの課金方法を確認。
 - [Codex Speed](https://learn.chatgpt.com/docs/agent-configuration/speed) — Fast modeの速度とcredit倍率を確認。
 - [Codex Subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents) — subagentのreasoning effortと高effort時のtoken増加を確認。
